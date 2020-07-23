@@ -1,0 +1,19 @@
+﻿@page "/"
+@namespace HouseholdDebtTracker.BlazorUI.Pages
+
+<h1>Welcome to household debt tracker!</h1>
+<AuthorizeView>
+    <Authorized>
+        <p>
+            Proceed in using application by clicking debts and people in the navigation bar.
+        </p>
+    </Authorized>
+    <NotAuthorized>
+        <p>
+            To use the application please login.
+        </p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+

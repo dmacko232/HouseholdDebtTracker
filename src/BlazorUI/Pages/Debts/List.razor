@@ -1,0 +1,133 @@
+@page "/Debts/List"
+@attribute [Authorize]
+@namespace HouseholdDebtTracker.BlazorUI.Pages.Debts
+
+@inject IDebtManager _manager
+@inject IPeopleManager _peopleManager
+
+<head>
+    <style>
+        .row {
+            display: flex;
+        }
+        .column {
+            flex: 40%;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="center">
+            <h1> Debts </h1>
+        </div>
+    </header>
+    <section>
+        <div class="debts">
+            <div class="row">
+                <div class="column">
+                    <div class="history">
+                        <p>
+                            <h4> Debts history </h4> 
+                        </p>
+                        <p>
+                            <ToggleShow Debts=history RefreshCallbackAsync=RefreshHistoryAsync useHistoryShow=true/>
+                        </p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="status">
+                        <p>
+                            <h4> Debts status </h4> 
+                        </p>
+                        <p>
+                            <ToggleShow Debts=status RefreshCallbackAsync=RefreshStatusAsync useHistoryShow=false/>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="management">
+            <div class="row">
+                <div class="column">
+                    <div class="settleUp">
+                      <p>
+                            <h4> Settlements </h4> 
+                        </p>
+                        <p>
+                            <SettleUp/>
+                        </p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="add">
+                        <p>
+                            <Add People=people SubmitCallbackAsync=AddDebtAsync/>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+@code
+{
+    List<Debt> history;
+    List<Debt> status;
+    List<Person> people;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (history == null)
+        {
+            await RefreshHistoryAsync(null);
+        }
+        if (status == null)
+        {
+            await RefreshStatusAsync(null);
+        }
+        if (people == null)
+        {
+            await RefreshPeopleAsync(null);
+        }
+    }
+
+
+    private async Task AddDebtAsync(Debt toAdd)
+    {
+        await _manager.AddDebtAsync(toAdd);
+        await RefreshAllAsync();
+    }
+
+    private async Task RefreshPeopleAsync(List<Person> curr)
+    {
+        people = null;
+        people = await _peopleManager.GetAllPeopleAsync();
+    }
+
+    private async Task RefreshAllAsync()
+    {
+        await RefreshDebtsAsync();
+        await RefreshPeopleAsync(null);
+    }
+
+    private async Task RefreshDebtsAsync()
+    {
+        await RefreshHistoryAsync(null);
+        await RefreshStatusAsync(null);
+    }
+
+    private async Task RefreshHistoryAsync(List<Debt> curr)
+    {
+        history = null;
+        history = await _manager.GetDebtsHistoryAsync();
+    }
+
+    private async Task RefreshStatusAsync(List<Debt> curr)
+    {
+        status = null;
+        status = await _manager.GetDebtsStatusAsync();
+    }
+
+}

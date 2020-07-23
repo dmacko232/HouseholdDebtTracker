@@ -1,0 +1,68 @@
+@inject IBLLMapper _mapper;
+@namespace HouseholdDebtTracker.BlazorUI.Pages.Debts
+
+<h4> Add debt </h4>
+@if (People == null)
+{
+    <p><em> Loading people.. </em></p>
+}
+else
+{
+    <EditForm Model="@userInputModel" OnValidSubmit="AddDebtAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <p>
+                <label>
+                    Amount:
+                    <InputNumber @bind-Value="userInputModel.Amount" />
+                </label>
+                <label>
+                    Type:
+                    <InputSelect @bind-Value="userInputModel.Type">
+                        <option value=@DisplayDebtType.Loan> Loan </option>
+                        <option value=@DisplayDebtType.Repayment> Repayment </option>
+                    </InputSelect>
+                </label>
+            <label>
+                    Debtor:
+                    <InputSelect @bind-Value="userInputModel.DebtorIndex">
+                        <option >Select debtor</option>
+                        @for (int i = 0; i < People.Count; ++i)
+                        {
+                            <option value=@i.ToString()> @People[i].Name </option>
+                        }
+                    </InputSelect>
+            </label>
+                <label>
+                    Creditor:
+                    <InputSelect @bind-Value="userInputModel.CreditorIndex">
+                        <option >Select creditor</option>
+                        @for (int i = 0; i < People.Count; ++i)
+                        {
+                            <option value=@i.ToString()> @People[i].Name </option>
+                        }
+                    </InputSelect>
+                </label>
+        </p>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </EditForm>
+}
+
+@code
+{
+
+    [Parameter]
+    public EventCallback<Debt> SubmitCallbackAsync { get; set; }
+
+    [Parameter]
+    public List<Person> People { get; set; }
+
+    private DisplayDebt userInputModel = new DisplayDebt();
+
+    private async Task AddDebtAsync()
+    {
+        userInputModel.People = People;
+        var debt = _mapper.MapToBLLDebt(userInputModel);
+        await SubmitCallbackAsync.InvokeAsync(debt);
+    }
+}

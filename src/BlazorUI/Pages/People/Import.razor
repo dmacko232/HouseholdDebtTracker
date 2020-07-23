@@ -1,0 +1,28 @@
+@namespace HouseholdDebtTracker.BlazorUI.Pages.People
+
+@using BlazorInputFile;
+@using System.IO;
+
+@inject IPeopleManager _manager
+
+<p>
+    Import people: <InputFile OnChange="HandleSelectionAsync" />
+</p>
+
+@code
+{
+    [Parameter]
+    public EventCallback<List<Person>> SubmitCallbackAsync { get; set; }
+
+    private async Task HandleSelectionAsync(IFileListEntry[] files)
+    {
+        var file = files.FirstOrDefault();
+        if (file != null)
+        {
+            var ms = new MemoryStream();
+            await file.Data.CopyToAsync(ms);
+            await _manager.ImportPeopleAsync(ms);
+            await SubmitCallbackAsync.InvokeAsync(null);
+        }
+    }
+}

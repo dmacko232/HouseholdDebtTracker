@@ -1,0 +1,42 @@
+@namespace HouseholdDebtTracker.BlazorUI.Pages.People
+
+@inject IPeopleManager _manager
+@inject IBLLMapper _mapper
+
+<h4> Add person </h4>
+<EditForm Model="@userInputModel" OnValidSubmit="AddPersonAsync">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+        <label>
+            Name:
+            <InputText @bind-Value="userInputModel.Name" />
+        </label>
+        <label>
+            Gender:
+            <InputSelect @bind-Value="userInputModel.Gender">
+                <option value=@DisplayGender.Male> Male </option>
+                <option value=@DisplayGender.Female> Female </option>
+                <option value=@DisplayGender.Other> Other </option>
+            </InputSelect>
+        </label>
+        <label>
+            Nickname (optional):
+            <InputText @bind-Value="userInputModel.NickName" />
+        </label>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>   
+
+@code
+{
+    [Parameter]
+    public EventCallback<Person> SubmitCallbackAsync { get; set; }
+
+    private DisplayPerson userInputModel = new DisplayPerson();
+
+    private async Task AddPersonAsync()
+    {
+        var person = _mapper.MapToBLLPerson(userInputModel);
+        await _manager.AddPersonAsync(person);
+        await SubmitCallbackAsync.InvokeAsync(person);
+    }
+}

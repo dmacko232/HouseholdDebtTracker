@@ -1,0 +1,67 @@
+@namespace HouseholdDebtTracker.BlazorUI.Pages.Debts
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+            <tr>
+                @if (ShowId)
+                {
+                    <th>Id</th>
+                }
+                @if (ShowType)
+                {
+                    <th>Type</th>
+                }
+                @if (ShowDate)
+                {
+                    <th>Date</th>
+                }
+                <th>Debtor Name</th>
+                <th>Creditor Name</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var debt in Debts ?? new List<Debt>())
+            {
+                <tr>
+                    @if (ShowId)
+                    {
+                        <td>
+                            <a href=@("/Debts/Get/" + debt.ID.ToString())> @debt.ID </a>
+                        </td>
+                    }
+                    
+                    @if (ShowType)
+                    {
+                        <td>@debt.Type.ToString()</td>
+                    }
+
+                    @if (ShowDate)
+                    {
+                        <td>@debt.Date.ToString()</td>
+                    }
+                    <td>
+                        <a href=@("/People/Get/" + debt.Debtor.ID)> @debt.Debtor.Name</a>
+                    </td>
+                    <td>
+                        <a href=@("/People/Get/" + debt.Creditor.ID)> @debt.Creditor.Name</a>
+                    </td>
+                    <td>@debt.Amount.ToString("C2")</td>
+                </tr>             
+            }
+        </tbody>
+    </table>
+</div>
+
+@code
+{
+    [Parameter]
+    public List<Debt> Debts { get; set; }
+    [Parameter]
+    public bool ShowType { get; set; }
+    [Parameter]
+    public bool ShowId { get; set; }
+    [Parameter]
+    public bool ShowDate { get; set; }
+}

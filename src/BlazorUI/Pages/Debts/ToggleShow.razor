@@ -1,0 +1,56 @@
+@namespace HouseholdDebtTracker.BlazorUI.Pages.Debts
+
+@if (show)
+{
+    @if (Debts == null) 
+    {
+        <p><em> Loading.. </em></p>
+    } 
+    else 
+    {
+        <Show Debts=Debts ShowId=useHistoryShow ShowType=useHistoryShow ShowDate=useHistoryShow/>
+        <p>
+            <button class="btn btn-primary" @onclick=Hide> Hide </button>
+            <button class="btn btn-primary" @onclick=RefreshAsync> Refresh </button>
+        </p>
+    }
+}
+else
+{
+    <p>
+        <button class="btn btn-primary" @onclick=ShowAsync> Show </button>
+    </p>
+}
+
+
+@code 
+{
+    [Parameter]
+    public bool useHistoryShow { get; set; }
+    [Parameter]
+    public List<Debt> Debts { get; set; }
+    [Parameter]
+    public EventCallback<List<Debt>> RefreshCallbackAsync { get; set; }
+    
+    bool show = false;
+
+    private async Task RefreshAsync()
+    {
+        Debts = null; // to trigger loading effect
+        await RefreshCallbackAsync.InvokeAsync(Debts);
+    }
+
+    private async Task ShowAsync()
+    {
+        show = true;
+        if (Debts == null)
+        {
+            await RefreshAsync();
+        }
+    }
+
+    private void Hide()
+    {
+        show = false;
+    }
+}

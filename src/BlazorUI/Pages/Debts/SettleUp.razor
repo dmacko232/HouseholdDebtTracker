@@ -1,0 +1,55 @@
+@namespace HouseholdDebtTracker.BlazorUI.Pages.Debts
+
+@inject IDebtManager _manager;
+
+<p>
+    <label>
+        Use optimal technique:
+        <input type="checkbox" @onchange="eventArgs => useOptimalStrategy = !useOptimalStrategy">
+    </label>
+    <button class="btn btn-primary" @onclick=CalculateSettlementsAsync> 
+        @if (!calculate)
+        {
+            @("Calculate")
+        }
+        else
+        {
+            @("Recalculate")
+        }
+    </button>
+    @if (calculate)
+    {
+        @if (settlements == null)
+        {
+            <p><em>Loading..</em></p>
+        }
+        else
+        {
+            
+            <p>
+                <Show Debts=settlements ShowId=false ShowType=false/>
+            </p>
+        }
+
+    }
+</p>
+
+@code
+{
+    private List<Debt> settlements;
+    bool calculate = false;
+    bool useOptimalStrategy = false;
+
+    private async Task CalculateSettlementsAsync()
+    {
+        calculate = true;
+        if (useOptimalStrategy)
+        {
+            settlements = await _manager.GetOptimalDebtSettlementsAsync();
+        }
+        else
+        {
+            settlements = await _manager.GetDebtSettlementsAsync();
+        }
+    }
+}

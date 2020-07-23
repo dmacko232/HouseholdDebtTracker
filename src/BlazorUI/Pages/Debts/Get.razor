@@ -1,0 +1,77 @@
+@page "/Debts/Get/{Id:int}"
+@attribute [Authorize]
+@namespace HouseholdDebtTracker.BlazorUI.Pages.Debts
+
+@using System;
+
+@inject IDebtManager _manager
+
+<head>
+    <style>
+        .row {
+            display: flex;
+        }
+        .column {
+            flex: 33.33%;
+        }
+    </style>
+</head>
+
+@if (debt == null)
+{
+    <p><em> Loading.. </em></p>
+}
+else 
+{
+    <div class="row">
+        <div class="column">
+            <div class="person">
+                <h4>
+                    Debtor
+                </h4>
+                <HouseholdDebtTracker.BlazorUI.Pages.People.ShowInfo Person=debt.Debtor UseLinkRef=true/>
+            </div>
+        </div>
+        <div class="column">
+            <div class="info">
+                <h4>
+                    Information
+                </h4>
+                <ul>
+                    <li> Amount: @Math.Round(debt.Amount, 2) </li>
+                    <li> Type: @debt.Type.ToString() </li>
+                </ul>
+            </div>
+        </div>
+        <div class="column">
+            <div class="person">
+                <h4>
+                    Creditor
+                </h4>
+                <HouseholdDebtTracker.BlazorUI.Pages.People.ShowInfo Person=debt.Creditor UseLinkRef=true/>
+            </div>
+        </div>
+    </div>
+}
+
+@code
+{
+    [Parameter]
+    public int Id { get; set; }
+
+    private Debt debt;
+
+    private async Task RefreshDebtDataAsync()
+    {
+        debt = null;
+        debt = await _manager.GetDebtByIdAsync(Id);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (debt == null)
+        {
+            await RefreshDebtDataAsync();
+        }
+    }
+}

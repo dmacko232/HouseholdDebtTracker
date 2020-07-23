@@ -1,0 +1,73 @@
+@using HouseholdDebtTracker.BLL.Models;
+@namespace HouseholdDebtTracker.BlazorUI.Pages.People
+
+@if (History == null)
+{
+    <p><em>Error happened..</em></p>
+}
+else
+{
+    <h3>History</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Debtor</th>
+                <th>Creditor</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var debt in History)
+            {
+                if (debt == null)
+                {
+                    continue;
+                }
+                <tr>
+                    <td>
+                        @if (debt.ID != null)
+                        {
+                            <a href=@("/Debts/Get/" + debt.ID)> @debt.ID </a>
+                        }
+                        else
+                        {
+                            @("unknown")
+                        }
+                    </td>
+                    <td>@(debt.Date?.ToString() ?? "unknown")</td>
+                    <td>@(debt.Type?.ToString() ?? "unknown")</td>
+                    <td>
+                        @if (debt.Debtor != null)
+                        {
+                            <a href=@("/People/Get/" + debt.Debtor.ID)> @debt.Debtor.Name </a>
+                        }
+                        else
+                        {
+                            @("unknown")
+                        }
+                    </td>
+                    <td>
+                        @if (debt.Creditor != null)
+                        {
+                             <a href=@("/People/Get/" + debt.Creditor.ID)> @debt.Creditor.Name </a>
+                        }
+                        else
+                        {
+                            @("unknown")
+                        }
+                    </td>
+                    <td>@debt.Amount.ToString("C2")</td>
+                </tr>                
+            }
+        </tbody>
+    </table>
+}
+
+@code 
+{
+    [Parameter]
+    public List<Debt> History { get; set; }
+}

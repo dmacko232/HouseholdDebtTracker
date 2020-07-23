@@ -1,0 +1,37 @@
+@namespace HouseholdDebtTracker.BlazorUI.Pages.People
+
+@if (Person == null) 
+{
+    <p><em>Loading..</em></p>
+} 
+else 
+{
+    <p>
+        <h5>
+                @if (UseLinkRef)
+                {
+                    <a  href=@("/People/Get/" + Person.ID.ToString())>
+                        @Person.Name 
+                    </a>
+                }
+                else
+                {
+                    @Person.Name 
+                }
+        </h5>
+        <ul>
+            <li>Id: @Person.ID</li>
+            <li>Gender: @Person.Gender.ToString()</li>
+            <li>Nickname: @(Person.NickName ?? "unknown")</li>
+        </ul>
+    </p>
+}
+
+@code
+{
+    [Parameter]
+    public Person Person { get; set; }
+
+    [Parameter]
+    public bool UseLinkRef { get; set; } = false;
+}

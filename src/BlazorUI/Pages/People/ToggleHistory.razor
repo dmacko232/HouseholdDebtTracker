@@ -1,0 +1,41 @@
+@namespace HouseholdDebtTracker.BlazorUI.Pages.People
+
+@inject IPeopleManager _manager
+
+@if (show)
+{
+    @if (History == null) 
+    {
+        <p><em>Loading..</em></p>
+    }
+    else
+    {
+        <ShowHistory History="History"/>
+        <p>
+            <button @onclick=HideHistory>Hide history</button>
+        </p>
+    }
+}
+else {
+    <p>
+        <button @onclick=ShowHistory>Show history</button>
+    </p>
+}
+
+@code
+{
+    
+    [Parameter]
+    public List<Debt> History { get; set; }
+    private bool show = false;
+
+    private void HideHistory()
+    {
+        show = false;
+    }
+
+    private void ShowHistory()
+    {
+        show = true;
+    }
+}

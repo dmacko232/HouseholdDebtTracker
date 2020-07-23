@@ -1,0 +1,50 @@
+@page "/People/Get/{Id:int}"
+@attribute [Authorize]
+@namespace HouseholdDebtTracker.BlazorUI.Pages.People
+
+@using HouseholdDebtTracker.BLL.Utility;
+
+@inject IPeopleManager _manager
+@inject IDebtCalculator _calculator;
+
+<header>
+    <h1> Personal page </h1>
+</header>
+
+@if (person == null) 
+{
+    <p><em>Loading..</em></p>
+} 
+else 
+{
+    <ShowInfo Person="person"/>
+
+    <ShowStatus Person="person"/>
+
+    <ToggleHistory History="history"/>
+}
+
+@code 
+{
+    [Parameter]
+    public int Id { get; set; }
+
+    private Person person;
+
+    private List<Debt> history;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (person == null) {           
+            await RefreshPersonDataAsync();
+        }
+    }
+
+    private async Task RefreshPersonDataAsync()
+    {
+        person = null;
+        person = await _manager.GetPersonWithDebtsHistoryAsync(Id);
+        history = person.Debts;
+        person.Debts = _calculator.CalculateDebtsStatus(history);
+    }
+}

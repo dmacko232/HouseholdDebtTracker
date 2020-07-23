@@ -1,0 +1,110 @@
+@namespace HouseholdDebtTracker.BlazorUI.Pages.People
+
+@using HouseholdDebtTracker.BLL.Models;
+
+<head>
+    <style>
+        .row {
+            display: flex;
+        }
+        .column {
+            flex: 50%;
+        }
+    </style>
+</head>
+
+
+<body>
+    @if (Person == null)
+    {
+        <p><em>Error happened..</em></p>
+    }
+    else
+    {
+        <div class="row">
+            <div class="column">
+                <h3>Debts</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Creditor id</th>
+                                <th>Creditor name</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var debt in Person.Debts ?? new List<Debt>())
+                            {
+                                if (debt == null || debt.Debtor?.ID != Person.ID)
+                                {
+                                    continue;
+                                }
+                                <tr>
+                                    <td>
+                                        @if (debt.Creditor != null)
+                                        {
+                                            <a href=@("/People/Get/" + debt.Creditor.ID)> @debt.Creditor.ID </a>
+                                        }
+                                        else
+                                        {
+                                            @("unknown")
+                                        }
+                                        
+                                    </td>
+                                    <td>@(debt.Creditor?.Name?.ToString() ?? "unknown")</td>
+                                    <td>@debt.Amount.ToString("C2")</td>
+                                </tr>                
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="column">
+                <h3>Credits</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Debtor id</th>
+                                <th>Debtor name</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var debt in Person.Debts ?? new List<Debt>())
+                            {
+                                if (debt == null || debt.Creditor?.ID != Person.ID)
+                                {
+                                    continue;
+                                }
+                                <tr>
+                                    <td>
+                                        @if (debt.Debtor != null)
+                                        {
+                                            <a href=@("/People/Get/" + debt.Debtor.ID)> @debt.Debtor.ID </a>
+                                        }
+                                        else
+                                        {
+                                            @("unknown")
+                                        }
+                                        
+                                    </td>
+                                    <td>@(debt.Debtor?.Name?.ToString() ?? "unknown")</td>
+                                    <td>@debt.Amount.ToString("C2")</td>
+                                </tr>                
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</body>
+
+@code 
+{
+    [Parameter]
+    public Person Person { get; set; }
+}

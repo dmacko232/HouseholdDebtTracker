@@ -1,0 +1,88 @@
+@page "/People/List"
+@attribute [Authorize]
+@namespace HouseholdDebtTracker.BlazorUI.Pages.People
+
+@inject IPeopleManager _manager
+@inject IBLLMapper _mapper;
+
+<h1> People </h1>
+
+<h3> Current people </h3>
+
+@if (people == null) 
+{
+    <p><em>Loading..</em></p>
+} 
+else 
+{
+    
+    <a class="form-control btn btn-primary" href="/People/Export?name=people.json" target="_blank">Export people</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Nickname</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var person in people)
+            {
+                string personId = person.ID?.ToString() ?? "unknown";
+                <tr>
+                    <td>@if (person.ID != null)
+                        {
+                            <a href =@("/People/Get/" + personId)> @personId </a>
+                        }
+                        else
+                        {
+                            @personId
+                        }
+                    </td>
+                    <td>@person.Name</td>
+                    <td>@person.Gender</td>
+                    <td>@(person.NickName ?? "unknown")</td>
+                </tr>                
+            }
+        </tbody>
+    </table>
+
+    <p>
+        <Add SubmitCallbackAsync="SubmitEventHandlerAsync"/>  
+    </p>
+
+    <p>
+        <Import SubmitCallbackAsync=RefreshPeopleAsync/>
+    </p>
+}
+
+@code 
+{
+    private List<Person> people;
+
+    private async Task RefreshPeopleAsync()
+    {
+        people = await _manager.GetAllPeopleAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (people == null)
+        {
+            await RefreshPeopleAsync();
+        }
+    }
+
+    private async Task SubmitEventHandlerAsync(Person person)
+    {
+        people.Add(person); // temporarily, Id will be unknown until db retrieval
+        await RefreshPeopleAsync();
+    }
+
+    private async Task ImportEventHandlerAsync(List<Person> people)
+    {
+        await RefreshPeopleAsync();
+    }
+
+}
